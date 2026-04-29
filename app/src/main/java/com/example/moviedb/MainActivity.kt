@@ -24,6 +24,7 @@ data class Movie(
     val overview: String
 )
 
+
 val movieList = listOf(
     Movie(1, "Interstellar", "A team of explorers travel through a wormhole in space."),
     Movie(2, "The Godfather", "The aging patriarch of a crime dynasty transfers control to his son."),

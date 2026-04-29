@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 
 @Composable
 fun MovieGridScreen(navController: NavController) {
@@ -25,27 +26,39 @@ fun MovieGridScreen(navController: NavController) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)
+                    .height(320.dp)
                     .clickable { navController.navigate("movieDetail/${movie.id}") }
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .fillMaxSize()
-                ) {
-                    Text(
-                        text = movie.title,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                Column {
+                    // --- NEW: Poster image section ---
+                    val posterUrl = "https://image.tmdb.org/t/p/w500${movie.posterPath}"
+                    AsyncImage(
+                        model = posterUrl,
+                        contentDescription = "Poster for ${movie.title}",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)   // Adjust this height as needed
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = movie.overview,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.bodySmall
-                    )
+
+                    Column(
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = movie.title,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = movie.overview,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
             }
         }

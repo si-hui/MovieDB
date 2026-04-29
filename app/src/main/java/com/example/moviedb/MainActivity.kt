@@ -21,16 +21,17 @@ import com.example.moviedb.ui.theme.MovieDBTheme
 data class Movie(
     val id: Int,
     val title: String,
-    val overview: String
+    val overview: String,
+    val posterPath: String?
 )
 
 
 val movieList = listOf(
-    Movie(157336, "Interstellar", "A team of explorers travel through a wormhole in space."),
-    Movie(238, "The Godfather", "The aging patriarch of a crime dynasty transfers control to his son."),
-    Movie(424, "Schindler's List", "A businessman saves the lives of over a thousand Jewish refugees."),
-    Movie(278, "The Shawshank Redemption", "Two imprisoned men bond over years, finding solace and redemption."),
-    Movie(372058, "Your Name", "Two strangers find they are linked in a bizarre way.")
+    Movie(157336, "Interstellar", "A team of explorers travel through a wormhole in space.", "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"),
+    Movie(238, "The Godfather", "The aging patriarch of a crime dynasty transfers control to his son.", "/3bhkrj58Vtu7enYsRolD1fZdja1.jpg"),
+    Movie(424, "Schindler's List", "A businessman saves the lives of over a thousand Jewish refugees.", "/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg"),
+    Movie(278, "The Shawshank Redemption", "Two imprisoned men bond over years, finding solace and redemption.", "/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg"),
+    Movie(372058, "Your Name", "Two strangers find they are linked in a bizarre way.", "/q719jXXEzOoYaps6babgKnONONX.jpg")
 )
 
 data class MovieDetail(
@@ -110,7 +111,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun MovieListScreen(navController: NavController) {
+fun MovieListScreen(navController: NavController) { //Changed to usiing Grid
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)

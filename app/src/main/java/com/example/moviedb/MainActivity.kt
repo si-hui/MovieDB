@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "movieList") {
                     composable("movieList") {
-                        MovieListScreen(navController)
+                        MovieGridScreen(navController)
                     }
                     composable("movieDetail/{movieId}") { backStackEntry ->
                         val movieId = backStackEntry.arguments?.getString("movieId")?.toIntOrNull()
@@ -90,8 +90,12 @@ class MainActivity : ComponentActivity() {
                             MovieDetailScreen(movie = movie, onBack = { navController.popBackStack() })
                         }
                     }
-                    composable("aboutScreen") {
-                        AboutScreen(onBack = { navController.popBackStack() })
+                    composable("movieExtras/{movieId}") { backStackEntry ->
+                        val movieId = backStackEntry.arguments?.getString("movieId")?.toIntOrNull()
+                        val movie = movieList.find { it.id == movieId }
+                        if (movie != null) {
+                            MovieExtrasScreen(movie = movie, onBack = { navController.popBackStack() })
+                        }
                     }
                 }
             }

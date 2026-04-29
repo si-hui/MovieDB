@@ -15,6 +15,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
 
 
 const val API_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlZWZmODI4ZjFkYmMwMzMwOGYxODJjOTIwYTRkMmQ0NCIsIm5iZiI6MTc3NTY1MzI0Ny42OTkwMDAxLCJzdWIiOiI2OWQ2NTE3ZjkzY2ViNjkzYzBjYzA4ZjYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.f_nHhi0Pr1HmZ9gA9Db28MY83HgDv121TesfZJ_dmCY"
@@ -50,7 +52,7 @@ fun MovieExtrasScreen(movie: Movie, onBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Reviews Section
+
         Text(text = "Reviews", fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleLarge)
 
@@ -115,14 +117,17 @@ fun ReviewCard(review: Review) {
     }
 }
 
+@OptIn(UnstableApi::class)
 @Composable
 fun VideoCard(video: Video) {
     val context = LocalContext.current
-    val videoUrl = "https://www.youtube.com/watch?v=${video.key}"
+    val videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(videoUrl))
+            val mediaItem = MediaItem.fromUri(videoUrl)
+            setMediaItem(mediaItem)
+            playWhenReady = false
             prepare()
         }
     }
@@ -134,7 +139,7 @@ fun VideoCard(video: Video) {
     Card(
         modifier = Modifier
             .width(320.dp)
-            .height(200.dp)
+            .height(220.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Text(
@@ -145,9 +150,10 @@ fun VideoCard(video: Video) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             AndroidView(
-                factory = {
-                    PlayerView(context).apply {
+                factory = { ctx ->
+                    PlayerView(ctx).apply {
                         player = exoPlayer
+                        useController = true
                         layoutParams = ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT

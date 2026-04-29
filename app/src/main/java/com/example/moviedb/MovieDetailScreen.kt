@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MovieDetailScreen(movie: Movie, onBack: () -> Unit) {
+fun MovieDetailScreen(movie: Movie, onBack: () -> Unit, onNavigateToExtras: () -> Unit) {
     val context = LocalContext.current
     val detail = movieDetailList.find { it.movieId == movie.id }
 
@@ -26,6 +26,11 @@ fun MovieDetailScreen(movie: Movie, onBack: () -> Unit) {
             Text("Back")
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(onClick = onNavigateToExtras) {
+            Text("Reviews & Trailers")
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(

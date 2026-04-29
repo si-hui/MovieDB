@@ -26,11 +26,11 @@ data class Movie(
 
 
 val movieList = listOf(
-    Movie(1, "Interstellar", "A team of explorers travel through a wormhole in space."),
-    Movie(2, "The Godfather", "The aging patriarch of a crime dynasty transfers control to his son."),
-    Movie(3, "Schindler's List", "A businessman saves the lives of over a thousand Jewish refugees."),
-    Movie(4, "The Shawshank Redemption", "Two imprisoned men bond over years, finding solace and redemption."),
-    Movie(5, "Your Name", "Two strangers find they are linked in a bizarre way.")
+    Movie(157336, "Interstellar", "A team of explorers travel through a wormhole in space."),
+    Movie(238, "The Godfather", "The aging patriarch of a crime dynasty transfers control to his son."),
+    Movie(424, "Schindler's List", "A businessman saves the lives of over a thousand Jewish refugees."),
+    Movie(278, "The Shawshank Redemption", "Two imprisoned men bond over years, finding solace and redemption."),
+    Movie(372058, "Your Name", "Two strangers find they are linked in a bizarre way.")
 )
 
 data class MovieDetail(
@@ -42,31 +42,31 @@ data class MovieDetail(
 
 val movieDetailList = listOf(
     MovieDetail(
-        movieId = 1,
+        movieId = 157336,
         genres = listOf("Adventure", "Drama", "Science Fiction"),
         homepage = "https://www.interstellar.film",
         imdbId = "tt0816692"
     ),
     MovieDetail(
-        movieId = 2,
+        movieId = 238,
         genres = listOf("Drama", "Crime"),
         homepage = "https://www.paramountmovies.com/movies/the-godfather",
         imdbId = "tt0068646"
     ),
     MovieDetail(
-        movieId = 3,
+        movieId = 424,
         genres = listOf("Drama", "History", "War"),
         homepage = "https://www.universalpictures.com",
         imdbId = "tt0108052"
     ),
     MovieDetail(
-        movieId = 4,
+        movieId = 278,
         genres = listOf("Drama"),
         homepage = "https://www.warnerbros.com",
         imdbId = "tt0111161"
     ),
     MovieDetail(
-        movieId = 5,
+        movieId = 372058,
         genres = listOf("Romance", "Animation", "Drama"),
         homepage = "https://www.yourname.movie",
         imdbId = "tt5311514"
@@ -87,7 +87,11 @@ class MainActivity : ComponentActivity() {
                         val movieId = backStackEntry.arguments?.getString("movieId")?.toIntOrNull()
                         val movie = movieList.find { it.id == movieId }
                         if (movie != null) {
-                            MovieDetailScreen(movie = movie, onBack = { navController.popBackStack() })
+                            MovieDetailScreen(
+                                movie = movie,
+                                onBack = { navController.popBackStack() },
+                                onNavigateToExtras = { navController.navigate("movieExtras/${movie.id}") }
+                            )
                         }
                     }
                     composable("movieExtras/{movieId}") { backStackEntry ->

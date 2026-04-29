@@ -17,7 +17,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.launch
 
-const val API_TOKEN = "Bearer eeff828f1dbc03308f182c920a4d2d44"
+const val API_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlZWZmODI4ZjFkYmMwMzMwOGYxODJjOTIwYTRkMmQ0NCIsIm5iZiI6MTc3NTY1MzI0Ny42OTkwMDAxLCJzdWIiOiI2OWQ2NTE3ZjkzY2ViNjkzYzBjYzA4ZjYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.f_nHhi0Pr1HmZ9gA9Db28MY83HgDv121TesfZJ_dmCY"
 
 @Composable
 fun MovieExtrasScreen(movie: Movie, onBack: () -> Unit) {

@@ -15,41 +15,20 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import kotlinx.coroutines.launch
+
 
 const val API_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlZWZmODI4ZjFkYmMwMzMwOGYxODJjOTIwYTRkMmQ0NCIsIm5iZiI6MTc3NTY1MzI0Ny42OTkwMDAxLCJzdWIiOiI2OWQ2NTE3ZjkzY2ViNjkzYzBjYzA4ZjYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.f_nHhi0Pr1HmZ9gA9Db28MY83HgDv121TesfZJ_dmCY"
 
 @Composable
 fun MovieExtrasScreen(movie: Movie, onBack: () -> Unit) {
-    val coroutineScope = rememberCoroutineScope()
-    var reviews by remember { mutableStateOf<List<Review>>(emptyList()) }
-    var videos by remember { mutableStateOf<List<Video>>(emptyList()) }
-    var isLoadingReviews by remember { mutableStateOf(true) }
-    var isLoadingVideos by remember { mutableStateOf(true) }
+    val viewModel: MovieExtrasViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    val reviews = viewModel.reviews
+    val videos = viewModel.videos
+    val isLoadingReviews = viewModel.isLoadingReviews
+    val isLoadingVideos = viewModel.isLoadingVideos
 
-    // Fetch reviews and videos when screen opens
     LaunchedEffect(movie.id) {
-        coroutineScope.launch {
-            try {
-                val reviewResponse = TmdbApi.service.getMovieReviews(movie.id, API_TOKEN)
-                reviews = reviewResponse.results
-            } catch (e: Exception) {
-                reviews = emptyList()
-            } finally {
-                isLoadingReviews = false
-            }
-        }
-
-        coroutineScope.launch {
-            try {
-                val videoResponse = TmdbApi.service.getMovieVideos(movie.id, API_TOKEN)
-                videos = videoResponse.results.filter { it.site == "YouTube" }
-            } catch (e: Exception) {
-                videos = emptyList()
-            } finally {
-                isLoadingVideos = false
-            }
-        }
+        viewModel.loadExtras(movie.id)
     }
 
     Column(

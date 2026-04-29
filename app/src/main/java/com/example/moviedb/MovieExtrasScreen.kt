@@ -121,7 +121,7 @@ fun ReviewCard(review: Review) {
 @Composable
 fun VideoCard(video: Video) {
     val context = LocalContext.current
-    val videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    val videoUrl = "https://www.w3schools.com/html/mov_bbb.mp4"
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {

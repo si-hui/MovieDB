@@ -19,75 +19,90 @@ import com.example.moviedb.viewmodel.MovieViewModel
 
 @Composable
 fun MovieGridScreen(navController: NavController, viewModel: MovieViewModel) {
-
     val movies by viewModel.movies.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    // Show loading indicator while first data is being fetched
-    if (isLoading && movies.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-
-    // Show empty state when no movies are cached and no internet
-    if (movies.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("No movies available.\nCheck internet and refresh.")
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = { viewModel.refresh() }) {
-                    Text("Retry")
-                }
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Buttons always at the top
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(onClick = { viewModel.loadMovies("popular") }) {
+                Text("Popular")
+            }
+            Button(onClick = { viewModel.loadMovies("top_rated") }) {
+                Text("Top Rated")
             }
         }
-        return
-    }
 
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(movies) { movie ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(320.dp)
-                    .clickable { navController.navigate("movieDetail/${movie.id}") }
-            ) {
-                Column {
-                    // --- NEW: Poster image section ---
-                    val posterUrl = "https://image.tmdb.org/t/p/w500${movie.posterPath}"
-                    AsyncImage(
-                        model = posterUrl,
-                        contentDescription = "Poster for ${movie.title}",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)   // Adjust this height as needed
-                    )
-
-                    Column(
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .fillMaxWidth()
+        // Content area (takes remaining space)
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            when {
+                isLoading && movies.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+                movies.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("No movies available.\nCheck internet and refresh.")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(onClick = { viewModel.refresh() }) {
+                                Text("Retry")
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        Text(
-                            text = movie.title,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = movie.overview,
-                            maxLines = 3,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                        items(movies) { movie ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(320.dp)
+                                    .clickable { navController.navigate("movieDetail/${movie.id}") }
+                            ) {
+                                Column {
+                                    val posterUrl = "https://image.tmdb.org/t/p/w500${movie.posterPath}"
+                                    AsyncImage(
+                                        model = posterUrl,
+                                        contentDescription = "Poster for ${movie.title}",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp)
+                                    )
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(12.dp)
+                                            .fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = movie.title,
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            text = movie.overview,
+                                            maxLines = 3,
+                                            overflow = TextOverflow.Ellipsis,
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

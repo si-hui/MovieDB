@@ -71,4 +71,8 @@ class MovieRepository(
             null
         }
     }
+
+    suspend fun getMovieById(movieId: Int): MovieEntity? {
+        return dao.getMovieById(movieId)
+    }
 }

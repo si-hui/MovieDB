@@ -6,23 +6,53 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.moviedb.viewmodel.MovieViewModel
 
 @Composable
-fun MovieGridScreen(navController: NavController) {
+fun MovieGridScreen(navController: NavController, viewModel: MovieViewModel) {
+
+    val movies by viewModel.movies.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    // Show loading indicator while first data is being fetched
+    if (isLoading && movies.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    // Show empty state when no movies are cached and no internet
+    if (movies.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("No movies available.\nCheck internet and refresh.")
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = { viewModel.refresh() }) {
+                    Text("Retry")
+                }
+            }
+        }
+        return
+    }
+
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(movieList) { movie ->
+        items(movies) { movie ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()

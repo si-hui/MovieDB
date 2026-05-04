@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -17,6 +18,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.moviedb.ui.theme.MovieDBTheme
+import com.example.moviedb.repository.MovieRepository
+import com.example.moviedb.viewmodel.MovieViewModel
+import androidx.compose.runtime.*
+import com.example.moviedb.database.MovieEntity
+import com.example.moviedb.TmdbApi
+import com.example.moviedb.API_TOKEN   // adjust if token is elsewhere
 
 data class Movie(
     val id: Int,
@@ -77,22 +84,45 @@ val movieDetailList = listOf(
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val repository = MovieRepository(
+            context = applicationContext,
+            apiService = TmdbApi.service,
+            token = API_TOKEN
+        )
+        val viewModel = MovieViewModel(repository)
+
         setContent {
             MovieDBTheme {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "movieList") {
                     composable("movieList") {
-                        MovieGridScreen(navController)
+                        MovieGridScreen(navController = navController, viewModel = viewModel)
                     }
                     composable("movieDetail/{movieId}") { backStackEntry ->
                         val movieId = backStackEntry.arguments?.getString("movieId")?.toIntOrNull()
-                        val movie = movieList.find { it.id == movieId }
-                        if (movie != null) {
+                        var movieEntity by remember { mutableStateOf<MovieEntity?>(null) }
+                        LaunchedEffect(movieId) {
+                            if (movieId != null) {
+                                movieEntity = repository.getMovieById(movieId)
+                            }
+                        }
+                        if (movieEntity != null) {
+                            val movie = Movie(
+                                id = movieEntity!!.id,
+                                title = movieEntity!!.title,
+                                overview = movieEntity!!.overview,
+                                posterPath = movieEntity!!.posterPath
+                            )
                             MovieDetailScreen(
                                 movie = movie,
                                 onBack = { navController.popBackStack() },
                                 onNavigateToExtras = { navController.navigate("movieExtras/${movie.id}") }
                             )
+                        } else {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
                         }
                     }
                     composable("movieExtras/{movieId}") { backStackEntry ->

@@ -41,6 +41,16 @@ interface TmdbApiService {
         @Path("movieId") movieId: Int,
         @Header("Authorization") token: String
     ): VideoResponse
+
+    @GET("movie/popular")
+    suspend fun getPopularMovies(
+        @Header("Authorization") token: String
+    ): MovieListResponse
+
+    @GET("movie/top_rated")
+    suspend fun getTopRatedMovies(
+        @Header("Authorization") token: String
+    ): MovieListResponse
 }
 
 // Retrofit instance
@@ -55,3 +65,17 @@ object TmdbApi {
             .create(TmdbApiService::class.java)
     }
 }
+
+data class ApiMovie(
+    val id: Int,
+    val title: String,
+    val overview: String,
+    val poster_path: String?,   // snake_case to match API
+    val backdrop_path: String?,
+    val vote_average: Double,
+    val genre_ids: List<Int>
+)
+
+data class MovieListResponse(
+    val results: List<ApiMovie>
+)

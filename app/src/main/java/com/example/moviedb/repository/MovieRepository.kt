@@ -5,7 +5,7 @@ import com.example.moviedb.database.MovieDatabase
 import com.example.moviedb.database.MovieEntity
 import com.example.moviedb.network.NetworkMonitor
 import com.example.moviedb.TmdbApiService
-import com.example.moviedb.ApiMovie
+import com.example.moviedb.MovieResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -45,12 +45,12 @@ class MovieRepository(
 
         if (movies != null) {
             // Convert ApiMovie (from API) to MovieEntity (database)
-            val entities = movies.map { apiMovie ->
+            val entities = movies.map { movie ->
                 MovieEntity(
-                    id = apiMovie.id,
-                    title = apiMovie.title,
-                    overview = apiMovie.overview,
-                    posterPath = apiMovie.poster_path ?: "",
+                    id = movie.id,
+                    title = movie.title,
+                    overview = movie.overview,
+                    posterPath = movie.poster_path ?: "",
                     type = type
                 )
             }
@@ -58,7 +58,7 @@ class MovieRepository(
         }
     }
 
-    private suspend fun fetchMoviesFromApi(type: String): List<ApiMovie>? {
+    private suspend fun fetchMoviesFromApi(type: String): List<MovieResult>? {
         return try {
             val response = if (type == "popular") {
                 apiService.getPopularMovies(token)

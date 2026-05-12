@@ -22,29 +22,32 @@ class MovieRepository(
     private val networkMonitor = NetworkMonitor(context)
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
 
-    // Expose cached movies as Flow (UI will observe this)
-    fun getMovieListStream(type: String): Flow<List<MovieEntity>> {
-        // Whenever internet becomes available, refresh the cache for the current type
+    private var currentType = "popular"
+
+    init {
         repositoryScope.launch {
             networkMonitor.observeNetworkState().collect { isConnected ->
                 if (isConnected) {
-                    refreshMovies(type)
+                    refreshMovies(currentType)
                 }
             }
         }
+    }
+    fun setCurrentType(type: String) {
+        currentType = type
+    }
+
+    // Just return the stream — don't auto refresh here
+    fun getMovieListStream(type: String): Flow<List<MovieEntity>> {
         return dao.getMoviesByType(type).flowOn(Dispatchers.IO)
     }
 
-    // Called manually or automatically when internet returns
+    // Fetch from API and save to database
     suspend fun refreshMovies(type: String) {
-        // Delete only movies of this type (so only the selected view type remains)
-        dao.deleteMoviesByType(type)
-
-        // Fetch fresh data from API
         val movies = fetchMoviesFromApi(type)
-
         if (movies != null) {
-            // Convert ApiMovie (from API) to MovieEntity (database)
+            // Only clear and update if fetch was successful
+            dao.deleteMoviesByType(type)
             val entities = movies.map { movie ->
                 MovieEntity(
                     id = movie.id,
@@ -56,6 +59,12 @@ class MovieRepository(
             }
             dao.insertAll(entities)
         }
+        // If fetch failed, keep existing cache
+    }
+
+    // Clear cache for a specific type
+    suspend fun clearMovies(type: String) {
+        dao.deleteMoviesByType(type)
     }
 
     private suspend fun fetchMoviesFromApi(type: String): List<MovieResult>? {

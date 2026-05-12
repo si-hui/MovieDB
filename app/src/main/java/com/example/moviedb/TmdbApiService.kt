@@ -29,8 +29,8 @@ data class Genre(
 data class MovieDetailResponse(
     val id: Int,
     val genres: List<Genre>,
-    val homepage: String,
-    val imdb_id: String
+    val homepage: String?,
+    val imdb_id: String?
 )
 
 // Review data classes

@@ -21,7 +21,14 @@ class MovieExtrasViewModel : ViewModel() {
     var isLoadingVideos by mutableStateOf(true)
         private set
 
+    private var loadedMovieId: Int? = null
+
     fun loadExtras(movieId: Int) {
+        if (loadedMovieId == movieId) return
+        loadedMovieId = movieId
+        isLoadingReviews = true
+        isLoadingVideos = true
+
         viewModelScope.launch {
             try {
                 val reviewResponse = TmdbApi.service.getMovieReviews(movieId, API_TOKEN)
